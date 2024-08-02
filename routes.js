@@ -60,4 +60,55 @@ router.get("/VisitorStats", async (req, res) => {
   }
 });
 
+router.get("/VisitorStats", async (req, res) => {
+  try {
+    const today = moment().tz("Asia/Kolkata").format("DD-MM-YYYY");
+    const yesterday = moment()
+      .subtract(1, "days")
+      .tz("Asia/Kolkata")
+      .format("DD-MM-YYYY");
+    const startOfMonth = moment()
+      .startOf("month")
+      .tz("Asia/Kolkata")
+      .format("DD-MM-YYYY");
+
+    const todayCount = await Visitor.countDocuments({ date: today });
+    const yesterdayCount = await Visitor.countDocuments({ date: yesterday });
+    const monthCount = await Visitor.countDocuments({
+      date: { $gte: startOfMonth },
+    });
+    const totalCount = await Visitor.countDocuments();
+
+    res.json({
+      today: todayCount,
+      yesterday: yesterdayCount,
+      month: monthCount,
+      total: totalCount,
+    });
+  } catch (error) {
+    console.error("Error fetching visitor statistics:", error);
+    res
+      .status(500)
+      .send({ message: "Error fetching visitor statistics", error });
+  }
+});
+
+router.get("/addVisitors", (req, res) => {
+  Visitor.find()
+    .then((visitor) => res.json(visitor))
+    .catch((err) => res.json(err));
+});
+
+router.put("/addVisitors/:id", (req, res) => {
+  Visitor.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then((updatedVisitor) => res.json(updatedVisitor))
+    .catch((err) => res.json(err));
+});
+
+router.delete("/addVisitors/:id", (req, res) => {
+  Visitor.findByIdAndDelete(req.params.id)
+    .then(() => res.json({ message: "Visitor deleted" }))
+    .catch((err) => res.json(err));
+});
+
 module.exports = router;

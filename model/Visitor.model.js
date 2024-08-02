@@ -41,8 +41,14 @@ const VisitorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  feedback: {
+    type: String,
+  },
+  outTime: {
+    type: String,
+  },
 });
 
-const Visitor = mongoose.model("Visitors", VisitorSchema);
+const Visitor = mongoose.model("Visitor", VisitorSchema);
 
 module.exports = Visitor;
